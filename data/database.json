@@ -1,0 +1,205 @@
+{
+  "usuarios": [
+    {
+      "id": 1,
+      "nome": "Produtor Rural AgroVision",
+      "email": "agricultor@agrovision.com",
+      "senha_hash": "$2y$10$wN0mK1kYFjL.rZ1qUqj/Nu49O7Teq4e7aK/B2hK9n5G0h5U3xS3eS",
+      "telefone": "+244 923 000 000",
+      "localizacao": "Huambo, Região Central",
+      "criado_em": "2026-09-15 08:00:00"
+    }
+  ],
+  "culturas": [
+    {
+      "id": 1,
+      "usuario_id": 1,
+      "nome": "Milho",
+      "variedade": "Híbrido Grão Amarelo",
+      "data_plantio": "2026-08-15",
+      "area_m2": 3500,
+      "tipo_solo": "franco",
+      "fase_crescimento": "floracao",
+      "talhao_localizacao": "Talhão Norte 01",
+      "observacoes": "Fase crítica de floração e polinização. Demanda hídrica alta.",
+      "status": "ativo",
+      "criado_em": "2026-08-15 08:30:00"
+    },
+    {
+      "id": 2,
+      "usuario_id": 1,
+      "nome": "Mandioca",
+      "variedade": "Regional Melhorada",
+      "data_plantio": "2026-06-10",
+      "area_m2": 5000,
+      "tipo_solo": "arenoso",
+      "fase_crescimento": "crescimento",
+      "talhao_localizacao": "Gleba Sul 02",
+      "observacoes": "Desenvolvimento radicular vigoroso com cobertura vegetal.",
+      "status": "ativo",
+      "criado_em": "2026-06-10 09:00:00"
+    },
+    {
+      "id": 3,
+      "usuario_id": 1,
+      "nome": "Tomate",
+      "variedade": "Santa Cruz",
+      "data_plantio": "2026-09-02",
+      "area_m2": 1200,
+      "tipo_solo": "franco",
+      "fase_crescimento": "crescimento",
+      "talhao_localizacao": "Pivô Central 03",
+      "observacoes": "Primeiras flores em abertura. Inspeção preventiva contínua.",
+      "status": "ativo",
+      "criado_em": "2026-09-02 07:45:00"
+    }
+  ],
+  "analises": [
+    {
+      "id": 3,
+      "usuario_id": 1,
+      "cultura_id": null,
+      "imagem_url": "uploads/cam_1790867255723_1767.jpg",
+      "planta_identificada": "Planta Cultivada",
+      "estado_aparente": "atencao",
+      "possivel_doenca": "Anomalia foliar fisiológica incipiente",
+      "possiveis_pragas": "Nenhuma infestação detectada",
+      "sintomas": "Descoloração ou mancha localizada",
+      "nivel_atencao": "moderado",
+      "recomendacoes_cuidado": "Acompanhar a evolução a cada 48 horas e manter regime padrão de adubação.",
+      "recomendacoes_prevencao": "Evitar excesso de água no solo e inspecionar a face inferior das folhas.",
+      "confianca_estimativa": "Estimativa técnica preliminar. Recomendada confirmação por técnico agrícola ou extensionista.",
+      "metodo_analise": "camada_servico_ia_agrovision",
+      "criado_em": "01/10/2026, 15:07:35"
+    },
+    {
+      "id": 2,
+      "usuario_id": 1,
+      "cultura_id": null,
+      "imagem_url": "uploads/exemplo_tomate.jpg",
+      "planta_identificada": "Milho (Zea mays)",
+      "estado_aparente": "atencao",
+      "possivel_doenca": "Nenhuma patologia fúngica evidente",
+      "possiveis_pragas": "Lagarta-do-cartucho (Spodoptera frugiperda)",
+      "sintomas": "Perfurações no verticilo foliar com excrementos característicos e raspagem foliar",
+      "nivel_atencao": "moderado",
+      "recomendacoes_cuidado": "Catação manual ou aplicação de bioinseticida Bacillus thuringiensis (Bt) ou extrato de nim a 1% nas primeiras horas da manhã.",
+      "recomendacoes_prevencao": "Conservar tesourinhas e inimigos naturais e rotacionar princípios ativos.",
+      "confianca_estimativa": "Resultado preliminar estimado com base em padrões visuais sintomáticos. Recomenda-se validação em campo por técnico agrícola ou agrônomo.",
+      "metodo_analise": "camada_servico_ia_agrovision",
+      "criado_em": "01/10/2026, 15:01:32"
+    },
+    {
+      "id": 1,
+      "usuario_id": 1,
+      "cultura_id": 3,
+      "imagem_url": "uploads/exemplo_tomate.jpg",
+      "planta_identificada": "Tomateiro (Solanum lycopersicum)",
+      "estado_aparente": "atencao",
+      "possivel_doenca": "Pinta-preta (Alternaria solani) incipiente",
+      "possiveis_pragas": "Nenhuma praga identificada na amostra",
+      "sintomas": "Manchas circulares com halos concêntricos nas folhas inferiores",
+      "nivel_atencao": "moderado",
+      "recomendacoes_cuidado": "Eliminar folhas do baixeiro afetadas para evitar disseminação para os ramos superiores. Desinfetar ferramentas.",
+      "recomendacoes_prevencao": "Pulverização protetora com calda bordalesa a 1% ou fungicida cúprico nas horas frescas. Evitar molhar a folhagem durante a rega.",
+      "confianca_estimativa": "Estimativa preliminar baseada em padrões sintomáticos. Recomenda-se validação em campo por agrônomo.",
+      "metodo_analise": "servico_diagnostico_agrovision",
+      "criado_em": "2026-09-28 10:15:00"
+    }
+  ],
+  "irrigacoes": [
+    {
+      "id": 1,
+      "usuario_id": 1,
+      "cultura_id": 1,
+      "data_hora": "2026-09-30 07:00:00",
+      "quantidade_litros": 8500,
+      "condicao_solo": "seco",
+      "condicao_clima": "ensolarado",
+      "recomendacao_sistema": "Recomenda-se irrigar hoje. Fase de floração requer umidade uniforme no leito radicular.",
+      "status_execucao": "irrigado",
+      "economizado_litros": 0,
+      "minutos_bomba": 145,
+      "criado_em": "2026-09-30 07:00:00"
+    },
+    {
+      "id": 2,
+      "usuario_id": 1,
+      "cultura_id": 2,
+      "data_hora": "2026-10-01 06:30:00",
+      "quantidade_litros": 0,
+      "condicao_solo": "umido_adequado",
+      "condicao_clima": "chuva_fraca",
+      "recomendacao_sistema": "A humidade informada está adequada. Aguarde antes de realizar nova irrigação.",
+      "status_execucao": "suspenso_clima",
+      "economizado_litros": 6200,
+      "minutos_bomba": 0,
+      "criado_em": "2026-10-01 06:30:00"
+    }
+  ],
+  "alertas": [
+    {
+      "id": 1,
+      "usuario_id": 1,
+      "cultura_id": 1,
+      "tipo": "irrigacao",
+      "titulo": "Irrigação recomendada para o Milho",
+      "mensagem": "A cultura do Milho está no Talhão Norte 01 em plena fase de floração com solo seco. Realize a rega programada.",
+      "nivel": "urgente",
+      "lido": 0,
+      "criado_em": "2026-10-01 06:00:00"
+    },
+    {
+      "id": 2,
+      "usuario_id": 1,
+      "cultura_id": 3,
+      "tipo": "doenca",
+      "titulo": "Acompanhamento da Pinta-preta no Tomate",
+      "mensagem": "Verificar se as folhas podadas surtiram efeito e aplicar calda bordalesa preventiva.",
+      "nivel": "alerta",
+      "lido": 0,
+      "criado_em": "2026-09-29 08:30:00"
+    }
+  ],
+  "clima": {
+    "temperatura": 26,
+    "temperatura_min": 17,
+    "temperatura_max": 28,
+    "humidade": 65,
+    "chuva_probabilidade": 20,
+    "vento_kmh": 12,
+    "condicao": "Parcialmente Nublado",
+    "favoravel_irrigacao": true,
+    "previsao": [
+      {
+        "dia": "Hoje",
+        "temp": "26°C",
+        "condicao": "Parcialmente Nublado",
+        "chuva": "20%"
+      },
+      {
+        "dia": "Amanhã",
+        "temp": "27°C",
+        "condicao": "Ensolarado",
+        "chuva": "10%"
+      },
+      {
+        "dia": "Sábado",
+        "temp": "24°C",
+        "condicao": "Chuva Esparsa",
+        "chuva": "60%"
+      }
+    ]
+  },
+  "users": [],
+  "esp32_telemetry": {
+    "dispositivo_id": "ESP32_AGRO_NODE_01",
+    "umidade_solo_pct": 32.5,
+    "temperatura_ar_c": 28.1,
+    "umidade_ar_pct": 54,
+    "sensor_chuva": 0,
+    "status_valvula": "fechada",
+    "tensao_bateria_v": 3.8,
+    "ultima_leitura": "01/10/2026, 15:20:00"
+  }
+}

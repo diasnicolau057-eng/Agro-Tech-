@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AgroVision - Inteligência para uma agricultura mais eficiente</title>
+  <meta name="description" content="Plataforma de agricultura inteligente para análise de plantas por câmera, diagnóstico fitossanitário com IA, irrigação inteligente sem sensores físicos e suporte a ESP32.">
+  <meta property="og:title" content="AgroVision - Inteligência para uma agricultura mais eficiente">
+  <meta property="og:description" content="Plataforma de agricultura inteligente para análise de plantas por câmera, diagnóstico fitossanitário com IA, irrigação inteligente sem sensores físicos e suporte a ESP32.">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#102419">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+  <!-- =========================================================================
+       CABEÇALHO INSTITUCIONAL AGROVISION
+       ========================================================================= -->
+  <header class="top-header">
+    <div class="header-container">
+      <a href="#analisar" class="brand-wrapper" onclick="switchTab('tab-scanner')">
+        <div class="brand-logo-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 12C2 6.5 6.5 2 12 2a10 10 0 0 1 8 4"></path>
+            <path d="M12 2a10 10 0 0 1 10 10v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-8"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </div>
+        <div class="brand-title-group">
+          <h1>AgroVision</h1>
+          <div class="brand-subtitle">Inteligência para uma agricultura mais eficiente.</div>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <!-- Indicador de Status Online / Offline -->
+        <div id="networkStatusBadge" class="network-status-badge online" title="Status de comunicação com o servidor">
+          <span class="status-dot"></span>
+          <span id="networkStatusText">Online</span>
+        </div>
+
+        <!-- Botão de Sincronização Local / Servidor -->
+        <button id="btnHeaderSync" class="btn-header-sync" onclick="syncOfflineQueue()" title="Sincronizar base local com o servidor PHP">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          <span class="desktop-text">Sincronizar</span>
+          <span id="pendingCountBadge" class="sync-count" style="display: none;">0</span>
+        </button>
+
+        <!-- Botão Perfil / Sessão -->
+        <button class="btn-header-sync" onclick="openModal('modalAuth')" title="Conta do Agricultor">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+          <span class="desktop-text" id="headerUserName">Produtor</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================================
+       NAVEGAÇÃO PRINCIPAL (DESKTOP)
+       ========================================================================= -->
+  <nav class="main-nav-bar">
+    <div class="nav-tabs-desktop">
+      <button class="nav-tab-btn active" data-tab="tab-scanner" onclick="switchTab('tab-scanner')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+          <circle cx="12" cy="13" r="4"></circle>
+        </svg>
+        <span>Analisar Minha Planta</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="tab-crops" onclick="switchTab('tab-crops')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22v-9"></path>
+          <path d="M9 10a5 5 0 0 1 6 0"></path>
+          <path d="M6 7a8 8 0 0 1 12 0"></path>
+          <path d="M4 22h16"></path>
+        </svg>
+        <span>Minhas Culturas</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="tab-irrigation" onclick="switchTab('tab-irrigation')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+        </svg>
+        <span>Irrigação Inteligente</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="20" x2="18" y2="10"></line>
+          <line x1="12" y1="20" x2="12" y2="4"></line>
+          <line x1="6" y1="20" x2="6" y2="14"></line>
+        </svg>
+        <span>Dashboard</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="tab-assistant" onclick="switchTab('tab-assistant')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Assistente IA</span>
+      </button>
+
+      <button class="nav-tab-btn" data-tab="tab-docs" onclick="switchTab('tab-docs')">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+        <span>Arquitetura PHP / MySQL / ESP32</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- =========================================================================
+       CONTEÚDO PRINCIPAL (CONTAINER)
+       ========================================================================= -->
+  <main class="container">
+
+    <!-- =======================================================================
+         PÁGINA INICIAL / HERO COM OS 4 BOTÕES PRINCIPAIS (ITEM 15)
+         ======================================================================= -->
+    <div class="hero-cta-card">
+      <div class="hero-cta-content">
+        <div style="font-size: 11px; text-transform: uppercase; font-weight: 700; color: #a4b39b; letter-spacing: 0.5px;">
+          Plataforma de Agricultura Inteligente
+        </div>
+        <h2>AGROVISION</h2>
+        <p>"Inteligência para uma agricultura mais eficiente."</p>
+      </div>
+    </div>
+
+    <!-- OS 4 BOTÕES PRINCIPAIS EXIGIDOS NA PÁGINA INICIAL (ITEM 15) -->
+    <div class="hero-four-nav-grid" style="margin-bottom: 24px;">
+      <button class="hero-four-btn cta-highlight" onclick="triggerCameraCaptureAction()">
+        <div class="hero-four-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+            <circle cx="12" cy="13" r="4"></circle>
+          </svg>
+        </div>
+        <div class="hero-four-btn-label">ANALISAR MINHA PLANTA</div>
+        <div class="hero-four-btn-sub">Visão computacional e diagnóstico</div>
+      </button>
+
+      <button class="hero-four-btn" onclick="switchTab('tab-crops')">
+        <div class="hero-four-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22v-9"></path>
+            <path d="M9 10a5 5 0 0 1 6 0"></path>
+            <path d="M4 22h16"></path>
+          </svg>
+        </div>
+        <div class="hero-four-btn-label">MINHAS CULTURAS</div>
+        <div class="hero-four-btn-sub">Talhões e histórico individual</div>
+      </button>
+
+      <button class="hero-four-btn" onclick="switchTab('tab-irrigation')">
+        <div class="hero-four-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+          </svg>
+        </div>
+        <div class="hero-four-btn-label">IRRIGAÇÃO INTELIGENTE</div>
+        <div class="hero-four-btn-sub">Balanço hídrico e telemetria ESP32</div>
+      </button>
+
+      <button class="hero-four-btn" onclick="switchTab('tab-dashboard')">
+        <div class="hero-four-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+        </div>
+        <div class="hero-four-btn-label">DASHBOARD</div>
+        <div class="hero-four-btn-sub">Métricas, gráficos e alertas</div>
+      </button>
+
+      <button class="hero-four-btn" onclick="switchTab('tab-assistant')">
+        <div class="hero-four-btn-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+        </div>
+        <div class="hero-four-btn-label">ASSISTENTE COM IA</div>
+        <div class="hero-four-btn-sub">Perguntas sobre manejo e solo</div>
+      </button>
+    </div>
+
+    <!-- =======================================================================
+         MÓDULO 1: ANALISAR MINHA PLANTA (FLUXO COMPLETO CÂMERA / IA REAL)
+         ======================================================================= -->
+    <section id="tab-scanner" class="tab-content active">
+      <div class="card-section">
+        <div class="section-header-row">
+          <div class="section-title">
+            <h3>Análise Real da Planta Através da Câmera</h3>
+            <p>Fotografe a folha ou selecione da galeria. O modelo de visão computacional analisa espécies, sintomas, pragas, deficiências minerais e indícios visuais de estresse hídrico.</p>
+          </div>
+        </div>
+
+        <div class="grid-2-col">
+          <!-- Coluna 1: Visor da Câmera e Disparo -->
+          <div>
+            <div class="camera-wrapper-card" style="margin-bottom: 0;">
+              <div class="camera-header-bar">
+                <div>
+                  <strong style="font-size: 13px; text-transform: uppercase;">Sensor Óptico</strong>
+                  <div style="font-size: 11px; color: var(--primary-100);" id="cameraDeviceLabel">Iniciando sensor...</div>
+                </div>
+                <div class="camera-mode-toggle">
+                  <button id="modeBtnCrop" class="mode-btn active" onclick="setCameraMode('crop')">
+                    Análise Foliar
+                  </button>
+                  <button id="modeBtnQr" class="mode-btn" onclick="setCameraMode('qr')">
+                    Código Lote
+                  </button>
+                </div>
+              </div>
+
+              <div class="camera-viewport" id="cameraViewport">
+                <video id="cameraVideo" autoplay playsinline muted></video>
+                <canvas id="cameraCanvas" style="display: none;"></canvas>
+
+                <div id="cameraPlaceholder" class="camera-placeholder-notice" style="display: none;">
+                  <h3>Câmera em Espera</h3>
+                  <p style="font-size: 13px; margin-top: 4px;">Ative a permissão no navegador ou utilize o botão de galeria abaixo.</p>
+                  <button class="btn btn-primary" style="margin-top: 10px;" onclick="startCamera()">Ativar Câmera</button>
+                </div>
+
+                <div id="qrScannerOverlay" class="qr-scanner-overlay hidden">
+                  <div class="qr-target-box">
+                    <div class="qr-target-hint">Enquadre o código QR do lote</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Controles Táteis Grandes para Celular -->
+              <div class="camera-controls-bar">
+                <button class="camera-action-btn" onclick="switchCameraFacing()" title="Alternar lente frontal/traseira">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 10c0-4.418-3.582-8-8-8s-8 3.582-8 8c0 1.5.4 2.9 1.1 4.1L3 17h6v-6l-2.1 2.1C6.3 12.1 6 11.1 6 10c0-3.314 2.686-6 6-6s6 2.686 6 6c0 1.5-.6 2.8-1.5 3.8l1.4 1.4c1.3-1.4 2.1-3.2 2.1-5.2z"/>
+                  </svg>
+                  <span>Inverter Lente</span>
+                </button>
+
+                <button id="btnCapturePhoto" class="btn-shutter" onclick="capturePhotoSnapshot()" title="Tirar fotografia da planta">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="4"></circle>
+                  </svg>
+                </button>
+
+                <button id="btnToggleCamera" class="camera-action-btn" onclick="toggleCameraPower()">
+                  <span>Pausar</span>
+                </button>
+
+                <label class="camera-action-btn" style="cursor: pointer;" title="Selecionar da galeria do telemóvel">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                    <circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <span>Galeria</span>
+                  <input type="file" id="fileUploadInput" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+                </label>
+              </div>
+            </div>
+
+            <!-- Card de Validação de QR Lote -->
+            <div id="qrResultCard" class="card-inner-box" style="display: none; margin-top: 12px; border-left: 4px solid var(--primary-500);">
+              <div class="section-header-row" style="margin-bottom: 6px;">
+                <strong style="font-size: 13px;">Lote Inspecionado: <span id="qrResultCode" style="font-family: monospace;"></span></strong>
+                <button class="btn btn-secondary" style="min-height: 28px; padding: 2px 8px; font-size: 11px;" onclick="closeQrResult()">Dispensar</button>
+              </div>
+              <div id="qrResultDetails" style="font-size: 12px; line-height: 1.5; color: var(--neutral-700);"></div>
+            </div>
+          </div>
+
+          <!-- Coluna 2: Pré-visualização Antes do Envio & Laudo Técnico -->
+          <div>
+            <!-- Caixa de Pré-Visualização Antes do Envio (Obrigatória Item 1 & 16) -->
+            <div id="imagePreviewStage" class="image-preview-stage-card" style="display: none;">
+              <div class="section-header-row" style="margin-bottom: 10px;">
+                <strong style="font-size: 14px; color: var(--primary-900);">
+                  Visualização da Fotografia
+                </strong>
+                <span class="preview-stage-badge">Pronta para Análise</span>
+              </div>
+
+              <div class="preview-image-box">
+                <img id="previewCapturedImg" src="" alt="Amostra vegetal capturada">
+              </div>
+
+              <!-- Contexto Opcional do Produtor -->
+              <div style="margin-top: 14px;">
+                <div class="form-group">
+                  <label class="form-label">Cultura Alvo / Talhão (Opcional)</label>
+                  <select id="previewCropSelect" class="form-control">
+                    <option value="">Detecção Automática pela Imagem</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Sintomas Observados em Campo (Opcional)</label>
+                  <textarea id="previewSymptomsInput" class="form-control" rows="2" placeholder="Ex: Folhas murchas nas horas quentes, manchas circulares escuras, bordas necrosadas ou perfurações..."></textarea>
+                  <div class="chips-selector-group">
+                    <button type="button" class="chip-tag-btn" onclick="addSymptomChip('Folhas murchas e enroladas')">Murcha / Stress Hídrico</button>
+                    <button type="button" class="chip-tag-btn" onclick="addSymptomChip('Manchas necróticas escuras')">Manchas Escuras</button>
+                    <button type="button" class="chip-tag-btn" onclick="addSymptomChip('Furos foliares e lagarta')">Furos / Pragas</button>
+                    <button type="button" class="chip-tag-btn" onclick="addSymptomChip('Clorose e amarelecimento')">Amarelecimento</button>
+                    <button type="button" class="chip-tag-btn" onclick="addSymptomChip('Lâmina foliar sadia')">Aparência Sadia</button>
+                  </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 16px;">
+                  <button type="button" class="btn btn-secondary" onclick="retakePhoto()" style="flex: 1;">
+                    Descartar / Nova Foto
+                  </button>
+                  <button id="btnSubmitAnalysis" type="button" class="btn btn-primary" onclick="submitPlantAnalysis()" style="flex: 2; font-size: 14px; font-weight: 700;">
+                    Enviar para Análise
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Estado de Espera Inicial -->
+            <div id="imageEmptyPrompt" class="card-inner-box" style="text-align: center; padding: 36px 20px;">
+              <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="var(--primary-600)" stroke-width="1.75" style="margin-bottom: 10px;">
+                <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                <circle cx="12" cy="13" r="4"></circle>
+              </svg>
+              <h4 style="font-size: 15px; color: var(--primary-900); font-weight: 700;">Aguardando Fotografia da Planta</h4>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 6px; max-width: 400px; margin-left: auto; margin-right: auto;">
+                Aponte a câmera para a folha afetada sob boa iluminação e clique no botão circular central, ou envie uma imagem da galeria.
+              </p>
+            </div>
+
+            <!-- Indicador de Carregamento com IA -->
+            <div id="analysisLoadingState" class="card-inner-box" style="display: none; text-align: center; padding: 30px;">
+              <div class="status-dot" style="width: 16px; height: 16px; display: inline-block; animation: pulseDot 1s infinite; background: var(--primary-500);"></div>
+              <h4 style="font-size: 14px; margin-top: 10px; color: var(--primary-900);">Processando com Visão Computacional</h4>
+              <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Analisando integridade celular, patologias fúngicas e sinais visuais de estresse hídrico...</p>
+            </div>
+
+            <!-- Alerta de Imagem com Baixa Qualidade (Item 1 & 6: Não inventar resultados) -->
+            <div id="imageQualityWarningCard" class="card-inner-box" style="display: none; border-left: 4px solid var(--status-warning); background: #fffdf5;">
+              <strong style="color: #9a3412; font-size: 13px; display: block; margin-bottom: 4px;">Imagem Inadequada para Diagnóstico Confiável:</strong>
+              <p id="imageQualityWarningText" style="font-size: 12px; color: #7c2d12; line-height: 1.4;">
+                A fotografia não possui foco, iluminação ou características foliares suficientes para uma identificação precisa. Por favor, capture uma nova imagem nítida com a folha centralizada.
+              </p>
+              <button class="btn btn-secondary" style="margin-top: 10px; font-size: 12px;" onclick="retakePhoto()">Tirar Nova Fotografia</button>
+            </div>
+
+            <!-- LAUDO TÉCNICO DETALHADO DA PLANTA (ITEM 1 & 2) -->
+            <div id="diagnosisResultCard" class="diagnosis-report-card" style="display: none;">
+              <!-- Cabeçalho do Laudo -->
+              <div class="report-header-banner">
+                <div>
+                  <span style="font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">
+                    Cultura / Espécie Identificada
+                  </span>
+                  <div class="report-plant-title" id="resPlantIdentified">Milho (Zea mays)</div>
+                  <div class="report-plant-sub" id="resAnalysisMethod">Análise via Visão Computacional AgroVision</div>
+                </div>
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 4px;">
+                  <span id="resAttentionBadge" class="attention-badge moderado">Atenção Moderada</span>
+                  <span style="font-size: 11px; color: var(--text-muted);" id="resConfidenceLevel">Confiança: 91%</span>
+                </div>
+              </div>
+
+              <!-- Achados Fitossanitários Principais -->
+              <div class="report-grid-findings">
+                <div class="finding-item-box">
+                  <span class="finding-label">Estado Aparente</span>
+                  <div class="finding-value" id="resApparentState">Em Alerta Fitossanitário</div>
+                </div>
+
+                <div class="finding-item-box">
+                  <span class="finding-label">Possíveis Doenças</span>
+                  <div class="finding-value" id="resPossibleDisease">Nenhuma patologia evidente</div>
+                </div>
+
+                <div class="finding-item-box">
+                  <span class="finding-label">Possíveis Pragas</span>
+                  <div class="finding-value" id="resPossiblePests">Lagarta-do-cartucho (Spodoptera)</div>
+                </div>
+              </div>
+
+              <!-- Sintomas, Nutrição e Danos nas Folhas -->
+              <div style="display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 12px;">
+                <div class="finding-item-box">
+                  <span class="finding-label">Sintomas Visíveis Encontrados</span>
+                  <div class="finding-value" id="resSymptomsFound" style="font-weight: 500;">
+                    Perfurações no cartucho foliar e raspagem superficial do limbo.
+                  </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                  <div class="finding-item-box">
+                    <span class="finding-label">Deficiência Nutricional Aparente</span>
+                    <div class="finding-value" id="resNutritionalDeficiency" style="font-size: 12px;">
+                      Equilíbrio mineral aparente
+                    </div>
+                  </div>
+
+                  <div class="finding-item-box">
+                    <span class="finding-label">Possíveis Danos nas Folhas</span>
+                    <div class="finding-value" id="resLeafDamage" style="font-size: 12px;">
+                      Lâmina foliar com perfurações mecânicas
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ANÁLISE DE IRRIGAÇÃO ATRAVÉS DE FOTOGRAFIA (ITEM 2 EXIGIDO) -->
+              <div class="water-stress-notice">
+                <strong>Análise Visual de Estresse Hídrico por Fotografia:</strong>
+                <div id="resWaterStressObservation" style="margin-bottom: 4px;">
+                  Sinais visuais de turgidez monitorados. Lâmina foliar expandida sem enrolamento severo.
+                </div>
+                <div id="resVisualIrrigationRecommendation" style="font-weight: 600; color: #166534;">
+                  Recomendação: Não foram identificados sinais visuais fortes de stress hídrico. Verifique o solo antes de irrigar.
+                </div>
+                <div style="font-size: 10px; color: #355e3b; margin-top: 4px; font-style: italic;">
+                  Nota: A fotografia fornece apenas indícios visuais da folhagem e NUNCA mede diretamente a umidade física do solo.
+                </div>
+              </div>
+
+              <!-- Recomendações de Cuidados vs Prevenção -->
+              <div class="report-recommendations-grid">
+                <div class="recommendation-card care">
+                  <h5>Recomendações de Cuidados Imediatos</h5>
+                  <p id="resCareRecommendations">
+                    Aplicação localizada de bioinseticida Bacillus thuringiensis ou extrato de nim nas primeiras horas da manhã.
+                  </p>
+                </div>
+
+                <div class="recommendation-card prevention">
+                  <h5>Recomendações de Prevenção</h5>
+                  <p id="resPreventionRecommendations">
+                    Monitoramento quinzenal de 20% das plantas, preservação de inimigos naturais e rotação de culturas.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Aviso Ético e de Estimativa (Item 1 & 2 Exigidos) -->
+              <div class="agronomic-disclaimer-box">
+                <strong>Aviso de Estimativa Técnica Preliminar:</strong>
+                <span id="resDisclaimerText">
+                  O diagnóstico gerado por visão computacional é uma estimativa preliminar baseada em padrões sintomáticos. Não constitui certeza absoluta. Problemas agrícolas importantes devem ser validados em campo por um engenheiro agrônomo ou técnico de extensão rural.
+                </span>
+              </div>
+
+              <!-- Ações do Laudo -->
+              <div style="display: flex; gap: 8px; justify-content: flex-end; margin-top: 16px; flex-wrap: wrap;">
+                <button type="button" class="btn btn-primary" onclick="consultAssistantAboutAnalysis()">Consultar Assistente IA</button>
+                <button type="button" class="btn btn-secondary" onclick="applyAnalysisToIrrigation()">Aplicar na Irrigação</button>
+                <button type="button" class="btn btn-secondary" onclick="exportCurrentReportPDF()">Exportar Laudo</button>
+                <button type="button" class="btn btn-secondary" onclick="retakePhoto()">Nova Análise</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         MÓDULO 2: MINHAS CULTURAS (ACOMPANHAMENTO E GESTÃO DE LAVOURAS)
+         ======================================================================= -->
+    <section id="tab-crops" class="tab-content">
+      <div class="card-section">
+        <div class="section-header-row">
+          <div class="section-title">
+            <h3>Minhas Culturas & Gestão de Talhões</h3>
+            <p>Acompanhe cada lavoura cadastrada, seus dias de desenvolvimento (DAE), histórico de laudos fotográficos e controle hídrico individual.</p>
+          </div>
+          <button class="btn btn-primary" onclick="openModal('modalAddCulture')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Cadastrar Cultura</span>
+          </button>
+        </div>
+
+        <div id="culturesCardsContainer" class="cultures-cards-grid">
+          <!-- Renderizado dinamicamente via app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         MÓDULO 3: SISTEMA INTELIGENTE DE IRRIGAÇÃO (CÂMERA, ESP32 OU HÍBRIDO)
+         ======================================================================= -->
+    <section id="tab-irrigation" class="tab-content">
+      <div class="card-section">
+        <div class="section-header-row">
+          <div class="section-title">
+            <h3>Sistema Inteligente de Irrigação</h3>
+            <p>Calcula a necessidade hídrica cruzando análise visual foliar, cultura, solo, área, histórico e telemetria opcional de placas ESP32.</p>
+          </div>
+        </div>
+
+        <!-- SELETOR DE MODO DE OPERAÇÃO (ITEM 4 EXIGIDO) -->
+        <div class="irrigation-mode-grid">
+          <div id="modeCardCamera" class="irrigation-mode-card active" onclick="setIrrigationOperatingMode('camera')">
+            <div>
+              <span class="mode-badge-tag">Modo 1 (Padrão)</span>
+              <div class="mode-card-title">Câmera do Telefone</div>
+              <div class="mode-card-desc">Opera 100% sem sensores físicos, baseando-se em indícios visuais de turgidez e entrada manual.</div>
+            </div>
+          </div>
+
+          <div id="modeCardEsp32" class="irrigation-mode-card" onclick="setIrrigationOperatingMode('esp32')">
+            <div>
+              <span class="mode-badge-tag">Modo 2 (IoT Opcional)</span>
+              <div class="mode-card-title">Placa ESP32</div>
+              <div class="mode-card-desc">Integração com sensores de umidade do solo, temperatura do ar e controle seguro de relé.</div>
+            </div>
+          </div>
+
+          <div id="modeCardHybrid" class="irrigation-mode-card" onclick="setIrrigationOperatingMode('hibrido')">
+            <div>
+              <span class="mode-badge-tag">Modo 3 (Avançado)</span>
+              <div class="mode-card-title">Modo Híbrido</div>
+              <div class="mode-card-desc">Fusão de dados: Câmera + Sensores ESP32 + Previsão Climática + Histórico de Regas.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PAINEL DE TELEMETRIA AO VIVO DO ESP32 (QUANDO EM MODO ESP32 OU HÍBRIDO) -->
+        <div id="esp32TelemetryPanel" class="esp32-telemetry-panel" style="display: none;">
+          <div class="section-header-row" style="margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 6px;">
+            <div>
+              <strong style="color: #8ce99a; font-size: 13px; text-transform: uppercase;">
+                Telemetria do Sensor IoT (ESP32)
+              </strong>
+              <div style="font-size: 11px; color: var(--neutral-300);" id="esp32DeviceId">Dispositivo: ESP32_AGRO_NODE_01</div>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <span class="sync-badge synced" style="background: rgba(43, 138, 62, 0.3); color: #8ce99a;">Conectado</span>
+              <button class="btn btn-secondary" style="font-size: 11px; min-height: 28px; padding: 2px 8px; background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2);" onclick="simulateEsp32Telemetry()">
+                Simular Leitura
+              </button>
+              <a href="/esp32_firmware.ino" download class="btn btn-secondary" style="font-size: 11px; min-height: 28px; padding: 2px 8px; background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2);" title="Baixar código C++ do ESP32">
+                Código ESP32 (.ino)
+              </a>
+            </div>
+          </div>
+
+          <div class="esp32-readings-grid">
+            <div class="sensor-box">
+              <span class="sensor-box-label">Umidade do Solo</span>
+              <div class="sensor-box-value" id="esp32SoilMoisture">44.5%</div>
+            </div>
+
+            <div class="sensor-box">
+              <span class="sensor-box-label">Temperatura do Ar</span>
+              <div class="sensor-box-value" id="esp32Temperature">26.8°C</div>
+            </div>
+
+            <div class="sensor-box">
+              <span class="sensor-box-label">Umidade do Ar</span>
+              <div class="sensor-box-value" id="esp32AirHumidity">62.0%</div>
+            </div>
+
+            <div class="sensor-box">
+              <span class="sensor-box-label">Status da Válvula</span>
+              <div class="sensor-box-value" id="esp32ValveStatus" style="font-size: 16px; color: #fcc419;">Fechada</div>
+            </div>
+          </div>
+          <div style="font-size: 11px; color: var(--neutral-300); font-style: italic;">
+            Trava de segurança ativa: Nenhuma válvula é acionada sem confirmação explícita do agricultor.
+          </div>
+        </div>
+
+        <div class="grid-2-col">
+          <!-- Formulário do Motor Hídrico -->
+          <div>
+            <form id="formIrrigationModel" onsubmit="handleProcessIrrigation(event)">
+              <div class="form-group">
+                <label class="form-label">Cultura Agrícola Alvo *</label>
+                <select id="irrigCropSelect" class="form-control" required onchange="calculateIrrigationRequirements()">
+                  <option value="Milho" selected>Milho (Zea mays)</option>
+                  <option value="Mandioca">Mandioca (Manihot esculenta)</option>
+                  <option value="Tomate">Tomateiro (Solanum lycopersicum)</option>
+                  <option value="Feijão">Feijão Comum (Phaseolus vulgaris)</option>
+                  <option value="Batata-doce">Batata-doce (Ipomoea batatas)</option>
+                  <option value="Soja">Soja (Glycine max)</option>
+                </select>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Data de Plantio *</label>
+                  <input type="date" id="irrigPlantDateInput" class="form-control" required onchange="calculateIrrigationRequirements()">
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Área do Talhão (m²) *</label>
+                  <input type="number" id="irrigAreaInput" class="form-control" value="1000" min="10" step="50" required oninput="calculateIrrigationRequirements()">
+                </div>
+              </div>
+
+              <div class="form-grid-2">
+                <div class="form-group">
+                  <label class="form-label">Textura do Solo *</label>
+                  <select id="irrigSoilSelect" class="form-control" required onchange="calculateIrrigationRequirements()">
+                    <option value="arenoso">Arenoso (Baixa retenção / Maior vazão)</option>
+                    <option value="franco" selected>Franco / Humífero (Equilibrado)</option>
+                    <option value="argiloso">Argiloso (Alta retenção / Lenta absorção)</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Vazão da Motobomba (Litros/Hora) *</label>
+                  <input type="number" id="irrigPumpFlowInput" class="form-control" value="3500" min="500" step="100" required oninput="calculateIrrigationRequirements()">
+                </div>
+              </div>
+
+              <!-- Condição de Umidade Aparente do Solo -->
+              <div class="form-group">
+                <label class="form-label">Condição Observada no Solo *</label>
+                <select id="irrigSoilConditionSelect" class="form-control" onchange="calculateIrrigationRequirements()">
+                  <option value="seco">Seco (Desagrega facilmente na mão, requer rega)</option>
+                  <option value="umido_adequado">Úmido Adequado (Forma torrão que não mancha)</option>
+                  <option value="encharcado">Encharcado (Excesso de água superficial)</option>
+                </select>
+              </div>
+
+              <!-- Condição do Tempo Observada -->
+              <div class="form-group">
+                <label class="form-label">Condição do Tempo Observada Hoje *</label>
+                <div class="weather-selector-grid">
+                  <input type="radio" id="wEnsolarado" name="weatherCondition" value="ensolarado" class="weather-radio" checked onchange="calculateIrrigationRequirements()">
+                  <label for="wEnsolarado" class="weather-pill-btn">
+                    <strong>Ensolarado</strong>
+                    <span>Demanda Normal</span>
+                  </label>
+
+                  <input type="radio" id="wNublado" name="weatherCondition" value="nublado" class="weather-radio" onchange="calculateIrrigationRequirements()">
+                  <label for="wNublado" class="weather-pill-btn">
+                    <strong>Nublado</strong>
+                    <span>Evapotranspiração -20%</span>
+                  </label>
+
+                  <input type="radio" id="wChuvaFraca" name="weatherCondition" value="chuva_fraca" class="weather-radio" onchange="calculateIrrigationRequirements()">
+                  <label for="wChuvaFraca" class="weather-pill-btn">
+                    <strong>Chuva Leve</strong>
+                    <span>Redução de 50%</span>
+                  </label>
+
+                  <input type="radio" id="wChuvaForte" name="weatherCondition" value="chuva_forte" class="weather-radio" onchange="calculateIrrigationRequirements()">
+                  <label for="wChuvaForte" class="weather-pill-btn">
+                    <strong>Chuva Forte</strong>
+                    <span>Rega Suspensa</span>
+                  </label>
+                </div>
+              </div>
+
+              <div style="margin-top: 14px;">
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                  Registrar Irrigação no Histórico do Produtor
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Coluna 2: Resultados, Explicação e Temporizador -->
+          <div>
+            <!-- Card de Volume Recomendado e Explicação do Motivo -->
+            <div class="kpi-panel-highlight">
+              <span class="kpi-header-tag">Recomendação do Balanço Hídrico</span>
+              <div class="calc-big-value" id="irrigDisplayVolume">0 Litros</div>
+              
+              <!-- Explicação do POR QUE da Recomendação (Item 3 Exigido) -->
+              <div style="margin-top: 8px; font-size: 13px; color: #fff; background: rgba(255,255,255,0.08); padding: 10px; border-radius: var(--radius-sm); border-left: 3px solid #8ce99a;">
+                <strong style="color: #8ce99a; display: block; font-size: 11px; text-transform: uppercase;">Justificativa Técnica da Recomendação:</strong>
+                <span id="irrigDisplayReason">Calculando parâmetros agronômicos de fase, solo e clima...</span>
+              </div>
+
+              <!-- Horários e Frequência -->
+              <div style="margin-top: 12px; font-size: 12px; color: var(--neutral-200);">
+                <div>Melhor Horário: <strong style="color: #8ce99a;" id="irrigBestTime">06:00 - 08:30 ou 16:30 - 18:30</strong></div>
+                <div style="margin-top: 4px;">Frequência: <strong style="color: #fff;" id="irrigFrequency">1 vez ao dia</strong></div>
+              </div>
+
+              <div class="savings-alert-box" id="irrigSavingsBox" style="display: none;">
+                <strong style="color: #a9e34b; display: block; font-size: 14px;">Suspensão Inteligente Ativada:</strong>
+                <span id="irrigSavingsText">Economia de água e energia elétrica.</span>
+              </div>
+            </div>
+
+            <!-- Temporizador Técnico da Motobomba -->
+            <div class="card-inner-box" style="margin-top: 16px; border: 1px solid var(--primary-700); background: #0f1c14;">
+              <div class="section-header-row" style="margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <strong style="font-size: 13px; color: var(--primary-400); text-transform: uppercase;">
+                  Temporizador da Motobomba
+                </strong>
+                <span id="timerStatusLabel" class="sync-badge offline" style="background: rgba(255,255,255,0.1); color: #fff;">
+                  Em Espera
+                </span>
+              </div>
+
+              <div style="text-align: center; padding: 10px 0;">
+                <div class="timer-display-digits" id="pumpTimerDigits">00:00:00</div>
+                <div style="font-size: 12px; color: var(--neutral-300); margin-top: 4px;" id="pumpTimerSubtitle">
+                  Duração estimada para vazão de 3.500 L/h
+                </div>
+
+                <div class="timer-progress-track">
+                  <div class="timer-progress-bar" id="pumpTimerProgressBar" style="width: 0%;"></div>
+                </div>
+
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 16px;">
+                  <button id="btnStartPumpTimer" class="btn btn-primary" onclick="togglePumpTimer()" style="min-width: 140px;">
+                    Acionar Bomba
+                  </button>
+                  <button class="btn btn-secondary" onclick="resetPumpTimer()" style="background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.2);">
+                    Reiniciar
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         MÓDULO 4: DASHBOARD PROFISSIONAL (GRÁFICOS, CLIMA & ALERTAS)
+         ======================================================================= -->
+    <section id="tab-dashboard" class="tab-content">
+      <div class="card-section">
+        <div class="section-header-row">
+          <div class="section-title">
+            <h3>Dashboard AgroVision</h3>
+            <p>Visão integrada de desempenho operacional, balanço hídrico, condições meteorológicas e alertas fitossanitários ativos.</p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" onclick="exportReportsCSV()">Exportar CSV</button>
+            <button class="btn btn-primary" onclick="syncOfflineQueue()">Sincronizar</button>
+          </div>
+        </div>
+
+        <!-- KPIs Principais -->
+        <div class="stats-kpi-grid">
+          <div class="stat-kpi-card">
+            <span class="stat-kpi-label">Culturas Monitoradas</span>
+            <div class="stat-kpi-number" id="dashKpiCrops">0</div>
+            <span class="stat-kpi-sub">Talhões cadastrados ativos</span>
+          </div>
+
+          <div class="stat-kpi-card">
+            <span class="stat-kpi-label">Análises Fitossanitárias</span>
+            <div class="stat-kpi-number" id="dashKpiAnalyses">0</div>
+            <span class="stat-kpi-sub">Vistorias fotográficas com IA</span>
+          </div>
+
+          <div class="stat-kpi-card">
+            <span class="stat-kpi-label">Consumo Hídrico Total</span>
+            <div class="stat-kpi-number" id="dashKpiWaterUsed">0 L</div>
+            <span class="stat-kpi-sub">Lâmina d'água aplicada</span>
+          </div>
+
+          <div class="stat-kpi-card">
+            <span class="stat-kpi-label">Água Poupada</span>
+            <div class="stat-kpi-number" id="dashKpiWaterSaved">0 L</div>
+            <span class="stat-kpi-sub">Por suspensão climática inteligente</span>
+          </div>
+        </div>
+
+        <!-- Gráficos e Clima em Grid de 2 Colunas -->
+        <div class="grid-2-col" style="margin-top: 18px;">
+          <!-- Gráfico de Consumo Hídrico dos Últimos 7 Dias -->
+          <div>
+            <h4 style="font-size: 14px; font-weight: 700; color: var(--primary-900); margin-bottom: 8px;">
+              Consumo de Água (Últimos 7 Dias - Litros)
+            </h4>
+            <div class="bar-chart-wrapper">
+              <div class="bar-chart-track-grid" id="dashboardWeeklyWaterChart">
+                <!-- Preenchido dinamicamente via JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Widget de Informações Climáticas (Item 11) -->
+          <div>
+            <h4 style="font-size: 14px; font-weight: 700; color: var(--primary-900); margin-bottom: 8px;">
+              Condições Meteorológicas Locais
+            </h4>
+            <div class="weather-widget-card">
+              <div class="weather-header-row">
+                <div>
+                  <span style="font-size: 11px; color: var(--text-muted); text-transform: uppercase;">Temperatura Atual</span>
+                  <div style="font-size: 26px; font-weight: 800; color: var(--primary-900);" id="weatherCurrentTemp">26°C</div>
+                </div>
+                <div style="text-align: right;">
+                  <span class="attention-badge baixo" id="weatherIrrigCondition">Favorável à Irrigação</span>
+                  <div style="font-size: 11px; color: var(--text-muted); margin-top: 4px;" id="weatherSummary">Parcialmente Nublado • Umidade 65%</div>
+                </div>
+              </div>
+
+              <div class="weather-forecast-grid" id="weatherForecastGrid">
+                <!-- Previsão 3 dias -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Central de Alertas Inteligentes (Item 10) -->
+        <div style="margin-top: 24px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--primary-900); margin-bottom: 10px;">
+            Central de Alertas Agronômicos e Hídricos
+          </h4>
+          <div id="dashboardAlertsContainer" style="display: flex; flex-direction: column; gap: 8px;">
+            <!-- Preenchido dinamicamente -->
+          </div>
+        </div>
+
+        <!-- Galeria das Últimas Avaliações Fotográficas -->
+        <div style="margin-top: 24px;">
+          <h4 style="font-size: 14px; font-weight: 700; color: var(--primary-900); margin-bottom: 12px;">
+            Histórico das Últimas Fotografias e Diagnósticos
+          </h4>
+          <div id="diagnosesGridContainer" class="diagnoses-grid">
+            <!-- Preenchido via app.js -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         MÓDULO: ASSISTENTE AGRÍCOLA COM IA (CONSULTORIA FITOSSANITÁRIA & MANEJO)
+         ======================================================================= -->
+    <section id="tab-assistant" class="tab-content">
+      <div class="card-section">
+        <div class="section-header-row">
+          <div class="section-title">
+            <h3>Assistente Agrícola com IA</h3>
+            <p>Faça perguntas textuais técnicas sobre manejo, dosagens, adubação e controle fitossanitário cruzando dados reais dos seus talhões, laudos fotográficos e telemetria.</p>
+          </div>
+          <div>
+            <button class="btn btn-secondary" onclick="clearAssistantChat()">Limpar Conversa</button>
+          </div>
+        </div>
+
+        <div class="assistant-chat-container">
+          <!-- Cabeçalho do Chat -->
+          <div class="assistant-chat-header">
+            <div class="assistant-header-title">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              <div>
+                <h4>AgroVision AI Advisor</h4>
+                <span>Motor Agronômico Especializado</span>
+              </div>
+            </div>
+            <div class="assistant-header-badge">
+              <span class="status-dot online" style="width: 7px; height: 7px;"></span>
+              <span>Conectado</span>
+            </div>
+          </div>
+
+          <!-- Barra de Contexto Ativo -->
+          <div class="assistant-context-bar">
+            <span id="assistantContextCrops">Contexto: Carregando talhões...</span>
+            <span id="assistantContextTelemetry">Telemetria: Sincronizada</span>
+          </div>
+
+          <!-- Mensagens do Chat -->
+          <div class="assistant-chat-messages" id="assistantMessagesList">
+            <!-- Mensagem Inicial de Boas-vindas -->
+            <div class="assistant-msg bot">
+              <div class="assistant-msg-bubble">
+                Olá, agricultor. Sou o seu Assistente Agrícola AgroVision. Tenho acesso aos dados dos seus talhões cadastrados, últimas vistorias foliares e balanço hídrico. Em que posso auxiliá-lo no manejo da sua lavoura hoje?
+              </div>
+              <div class="assistant-msg-time">Agora</div>
+            </div>
+          </div>
+
+          <!-- Sugestões Rápidas de Perguntas (Chips) -->
+          <div class="assistant-chips-row">
+            <button type="button" class="assistant-chip-btn" onclick="sendQuickAssistantPrompt('Como tratar a lagarta-do-cartucho detectada no milho?')">
+              Lagarta no Milho
+            </button>
+            <button type="button" class="assistant-chip-btn" onclick="sendQuickAssistantPrompt('Qual a dosagem preventiva de calda bordalesa para o tomateiro?')">
+              Calda Bordalesa no Tomate
+            </button>
+            <button type="button" class="assistant-chip-btn" onclick="sendQuickAssistantPrompt('Qual o melhor horário e volume para irrigar meus talhões hoje?')">
+              Recomendação de Rega
+            </button>
+            <button type="button" class="assistant-chip-btn" onclick="sendQuickAssistantPrompt('Folhas amarelas na base indicam falta de nitrogênio?')">
+              Nutrição e Amarelecimento
+            </button>
+          </div>
+
+          <!-- Formulário de Envio -->
+          <form id="assistantChatForm" class="assistant-chat-input-row" onsubmit="handleSendAssistantMessage(event)">
+            <textarea
+              id="assistantInputText"
+              rows="1"
+              placeholder="Digite sua dúvida sobre pragas, adubação, manejo ou irrigação..."
+              required
+              onkeydown="handleAssistantTextareaKey(event)"
+            ></textarea>
+            <button type="submit" id="btnSendAssistant" class="assistant-send-btn">
+              <span>Enviar</span>
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- =======================================================================
+         MÓDULO 5: ARQUITETURA TÉCNICA (PHP / MYSQL / FIRMWARE ESP32)
+         ======================================================================= -->
+    <section id="tab-docs" class="tab-content">
+      <div class="card-section">
+        <div class="section-header-row">
+          <div class="section-title">
+            <h3>Arquitetura Técnica do Sistema AgroVision</h3>
+            <p>Especificações do backend PHP RESTful, banco de dados MySQL estruturado e firmware C++ para ESP32.</p>
+          </div>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="copyPhpCode()">Copiar api.php</button>
+            <button class="btn btn-secondary" onclick="downloadPhpFile()">Descarregar api.php</button>
+            <button class="btn btn-secondary" onclick="downloadSqlFile()">Descarregar schema.sql</button>
+            <a href="/esp32_firmware.ino" download class="btn btn-secondary">Descarregar ESP32 (.ino)</a>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+          <div>
+            <h4 style="font-size: 13px; font-weight: 700; margin-bottom: 8px; color: var(--primary-900);">
+              Código-Fonte do Backend PHP (api.php):
+            </h4>
+            <pre class="code-preview-block" id="phpCodeViewer">Carregando código PHP do backend...</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =========================================================================
+       BARRA INFERIOR MOBILE (SMARTPHONES)
+       ========================================================================= -->
+  <nav class="mobile-bottom-nav">
+    <button class="mobile-nav-item active" data-tab="tab-scanner" onclick="switchTab('tab-scanner')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+        <circle cx="12" cy="13" r="4"></circle>
+      </svg>
+      <span>Analisar</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="tab-crops" onclick="switchTab('tab-crops')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22v-9"></path>
+        <path d="M9 10a5 5 0 0 1 6 0"></path>
+        <path d="M4 22h16"></path>
+      </svg>
+      <span>Culturas</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="tab-irrigation" onclick="switchTab('tab-irrigation')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"></path>
+      </svg>
+      <span>Irrigação</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="20" x2="18" y2="10"></line>
+        <line x1="12" y1="20" x2="12" y2="4"></line>
+        <line x1="6" y1="20" x2="6" y2="14"></line>
+      </svg>
+      <span>Dashboard</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="tab-assistant" onclick="switchTab('tab-assistant')">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+      </svg>
+      <span>Assistente</span>
+    </button>
+  </nav>
+
+  <!-- =========================================================================
+       MODAIS (CULTURA, AUTENTICAÇÃO E ZOOM)
+       ========================================================================= -->
+  <!-- Modal: Nova Cultura -->
+  <div id="modalAddCulture" class="modal-backdrop" onclick="closeModal('modalAddCulture')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Cadastrar Nova Cultura / Talhão</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalAddCulture')">&times;</button>
+      </div>
+      <form id="formAddCulture" onsubmit="handleSaveCulture(event)">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label">Nome da Cultura *</label>
+            <input type="text" id="newCropName" class="form-control" placeholder="Ex: Milho Grão, Mandioca, Tomateiro" required>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Variedade / Híbrido</label>
+              <input type="text" id="newCropVariety" class="form-control" placeholder="Ex: BR-304, Macaxeira Branca">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Identificação do Talhão</label>
+              <input type="text" id="newCropPlot" class="form-control" placeholder="Ex: Talhão 02 - Leste">
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Data de Plantio *</label>
+              <input type="date" id="newCropPlantDate" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Área em m² *</label>
+              <input type="number" id="newCropArea" class="form-control" value="2500" min="50" step="100" required>
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-group">
+              <label class="form-label">Tipo de Solo</label>
+              <select id="newCropSoil" class="form-control">
+                <option value="franco">Franco / Humífero</option>
+                <option value="arenoso">Arenoso</option>
+                <option value="argiloso">Argiloso</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Fase Fenológica Inicial</label>
+              <select id="newCropStage" class="form-control">
+                <option value="germinacao">Germinação / Emergência</option>
+                <option value="crescimento" selected>Crescimento Vegetativo</option>
+                <option value="floracao">Floração / Frutificação</option>
+                <option value="maturacao">Maturação / Pré-Colheita</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Observações Técnicas</label>
+            <textarea id="newCropNotes" class="form-control" rows="2" placeholder="Observações de adubação, histórico de pragas ou solo..."></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" onclick="closeModal('modalAddCulture')">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Salvar Cultura</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Autenticação do Agricultor (Item 13) -->
+  <div id="modalAuth" class="modal-backdrop" onclick="closeModal('modalAuth')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="authModalTitle">Conta do Produtor Rural</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalAuth')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div id="authProfileView">
+          <div style="text-align: center; padding: 10px 0;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--primary-700); color: #fff; display: flex; align-items: center; justify-content: center; margin: 0 auto 10px; font-size: 20px; font-weight: 700;">
+              PR
+            </div>
+            <h4 id="authProfileName" style="color: var(--primary-900); font-size: 16px;">Produtor Rural AgroVision</h4>
+            <p id="authProfileEmail" style="color: var(--text-muted); font-size: 13px;">agricultor@agrovision.com</p>
+            <div style="font-size: 12px; color: var(--primary-800); margin-top: 4px;" id="authProfileFarm">Quinta Esperança Verde • Huambo</div>
+          </div>
+          <div style="margin-top: 16px; border-top: 1px solid var(--border-light); padding-top: 12px; display: flex; justify-content: space-between;">
+            <button class="btn btn-secondary" onclick="showAuthRegisterForm()">Trocar Usuário</button>
+            <button class="btn btn-secondary" onclick="handleLogout()" style="color: var(--status-danger);">Terminar Sessão</button>
+          </div>
+        </div>
+
+        <form id="authLoginForm" style="display: none;" onsubmit="handleLoginSubmit(event)">
+          <div class="form-group">
+            <label class="form-label">E-mail *</label>
+            <input type="email" id="loginEmail" class="form-control" value="agricultor@agrovision.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Senha *</label>
+            <input type="password" id="loginPassword" class="form-control" value="senha123" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Entrar no Sistema</button>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('modalAuth')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Zoom de Foto -->
+  <div id="modalPhotoZoom" class="modal-backdrop" onclick="closeModal('modalPhotoZoom')">
+    <div class="modal-box" style="max-width: 650px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h3 id="zoomModalTitle">Inspeção Detalhada da Planta</h3>
+        <button class="modal-close-btn" onclick="closeModal('modalPhotoZoom')">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 0; background: #000; display: flex; align-items: center; justify-content: center; min-height: 280px;">
+        <img id="zoomModalImg" style="max-width: 100%; max-height: 70vh; object-fit: contain;" alt="Inspeção detalhada">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('modalPhotoZoom')">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contêiner de Notificações Toast -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- Script Principal -->
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

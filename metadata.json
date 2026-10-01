@@ -1,0 +1,11 @@
+{
+  "name": "AgroVision - Plataforma de Agricultura Inteligente",
+  "description": "Plataforma móvel de agricultura inteligente com análise foliar por câmera, diagnóstico fitossanitário assistido, irrigação inteligente sem sensores e acompanhamento de culturas.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
